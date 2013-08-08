@@ -45,6 +45,16 @@ describe "Course Overview", ->
           </section>
         """
 
+        # appendSetFixtures """
+        #   <div class="subsection-list">
+        #     <ol data-id="parent-list-id">
+        #       <li class="unit" data-id="first-unit-id" data-parent-id="parent-list-id"></li>
+        #       <li class="unit" data-id="second-unit-id" data-parent-id="parent-list-id"></li>
+        #       <li class="unit" data-id="third-unit-id" data-parent-id="parent-list-id"></li>
+        #     </ol>
+        #   </div>
+        # """
+
         spyOn(window, 'saveSetSectionScheduleDate').andCallThrough()
         # Have to do this here, as it normally gets bound in document.ready()
         $('a.save-button').click(saveSetSectionScheduleDate)
