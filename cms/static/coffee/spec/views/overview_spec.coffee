@@ -1,7 +1,7 @@
 describe "Course Overview", ->
 
     beforeEach ->
-        _.each ["/static/js/vendor/date.js", "/static/js/vendor/timepicker/jquery.timepicker.js", "/jsi18n/"], (path) ->
+        _.each ["/static/js/vendor/date.js", "/static/js/vendor/timepicker/jquery.timepicker.js", "/jsi18n/", "/static/js/vendor/draggabilly.pkgd.js"], (path) ->
           appendSetFixtures """
             <script type="text/javascript" src="#{path}"></script>
           """
@@ -45,15 +45,15 @@ describe "Course Overview", ->
           </section>
         """
 
-        # appendSetFixtures """
-        #   <div class="subsection-list">
-        #     <ol data-id="parent-list-id">
-        #       <li class="unit" data-id="first-unit-id" data-parent-id="parent-list-id"></li>
-        #       <li class="unit" data-id="second-unit-id" data-parent-id="parent-list-id"></li>
-        #       <li class="unit" data-id="third-unit-id" data-parent-id="parent-list-id"></li>
-        #     </ol>
-        #   </div>
-        # """
+        appendSetFixtures """
+          <div class="subsection-list">
+            <ol class="sortable-unit-list" data-id="parent-list-id">
+              <li class="unit" data-id="first-unit-id" data-parent-id="parent-list-id"></li>
+              <li class="unit" data-id="second-unit-id" data-parent-id="parent-list-id"></li>
+              <li class="unit" data-id="third-unit-id" data-parent-id="parent-list-id"></li>
+            </ol>
+          </div>
+        """#"
 
         spyOn(window, 'saveSetSectionScheduleDate').andCallThrough()
         # Have to do this here, as it normally gets bound in document.ready()
@@ -67,6 +67,13 @@ describe "Course Overview", ->
         @xhr = sinon.useFakeXMLHttpRequest()
         requests = @requests = []
         @xhr.onCreate = (req) -> requests.push(req)
+
+        CMS.Views.Draggabilly.makeDraggable(
+          '.unit',
+          '.unit-drag-handle',
+          'ol.sortable-unit-list',
+          'li.branch, article.subsection-body'
+        )
 
     afterEach ->
         delete window.analytics
@@ -100,3 +107,23 @@ describe "Course Overview", ->
       $('a.delete-section-button').click()
       $('a.action-primary').click()
       expect(@notificationSpy).toHaveBeenCalled()
+
+    it "correctly finds the drop target of a drag", ->
+      $ele = $('.unit').first()
+      $ele.offset(
+        top: $ele.offset().top + 20, left: $ele.offset().left
+      )
+      destination = CMS.Views.Draggabilly.findDestination($ele)
+      expect(destination.ele).toBe($ele.siblings().first())
+      expect(destination.attachMethod).toBe('after')
+
+    it "reports a null destination on a failed drag", ->
+      $ele = $('.unit').first()
+      $ele.offset(
+        top: $ele.offset().top + 200, left: $ele.offset().left
+      )
+      destination = CMS.Views.Draggabilly.findDestination($ele)
+      expect(destination).toEqual(
+        ele: null
+        attachMethod: ""
+      )
