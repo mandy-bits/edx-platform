@@ -30,6 +30,9 @@ CMS.Views.Metadata.Editor = Backbone.View.extend({
                 else if(model.getType() === CMS.Models.Metadata.LIST_TYPE) {
                     new CMS.Views.Metadata.List(data);
                 }
+                else if(model.getType() === CMS.Models.Metadata.VIDEO_LIST_TYPE) {
+                    new CMS.Views.Metadata.VideoList(data);
+                }
                 else {
                     // Everything else is treated as GENERIC_TYPE, which uses String editor.
                     new CMS.Views.Metadata.String(data);

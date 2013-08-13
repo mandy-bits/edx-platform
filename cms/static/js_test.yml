@@ -66,6 +66,7 @@ src_paths:
 spec_paths:
     - coffee/spec/helpers.js
     - coffee/spec
+    - js_spec
 
 # Paths to fixture files (optional)
 # The fixture path will be set automatically when using jasmine-jquery.
@@ -83,7 +84,7 @@ fixture_paths:
 # appearing in the test runner page.
 # Files are included by default, which means that they
 # are loaded using a <script> tag in the test runner page.
-# When loading many files, this can be slow, so 
+# When loading many files, this can be slow, so
 # exclude any files you don't need.
 #exclude_from_page:
 #    - path/to/lib/exclude/*

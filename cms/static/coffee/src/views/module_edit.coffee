@@ -33,6 +33,8 @@ class CMS.Views.ModuleEdit extends Backbone.View
           collection: new CMS.Models.MetadataCollection(models)
           })
 
+      @module.setMetadataEditor(@metadataEditor) if @module.setMetadataEditor
+
       # Need to update set "active" class on data editor if there is one.
       # If we are only showing settings, hide the data editor controls and update settings accordingly.
       if @hasDataEditor()
