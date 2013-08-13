@@ -47,11 +47,19 @@ describe "Course Overview", ->
 
         appendSetFixtures """
           <div class="subsection-list">
-            <ol class="sortable-unit-list" data-id="parent-list-id">
-              <li class="unit" data-id="first-unit-id" data-parent-id="parent-list-id"></li>
-              <li class="unit" data-id="second-unit-id" data-parent-id="parent-list-id"></li>
-              <li class="unit" data-id="third-unit-id" data-parent-id="parent-list-id"></li>
+            <ol class="sortable-unit-list" id="list-1" data-id="parent-list-id-1">
+              <li class="unit" id="unit-1" data-id="first-unit-id" data-parent-id="parent-list-id-1"></li>
+              <li class="unit" id="unit-2" data-id="second-unit-id" data-parent-id="parent-list-id-1"></li>
+              <li class="unit" id="unit-3" data-id="third-unit-id" data-parent-id="parent-list-id-1"></li>
             </ol>
+          </div>
+          </div class="subsection-list">
+            <ol class="sortable-unit-list" id="list-2" data-id="parent-list-id-2">
+              <li class="unit" id="unit-4" data-id="first-unit-id" data-parent-id="parent-list-id-2"></li>
+            </ol>
+          </div>
+          <div class="subsection-list">
+            <ol class="sortable-unit-list" id="list-3" data-id="parent-list-id-3"></ol>
           </div>
         """#"
 
@@ -108,22 +116,124 @@ describe "Course Overview", ->
       $('a.action-primary').click()
       expect(@notificationSpy).toHaveBeenCalled()
 
-    it "correctly finds the drop target of a drag", ->
-      $ele = $('.unit').first()
-      $ele.offset(
-        top: $ele.offset().top + 20, left: $ele.offset().left
-      )
-      destination = CMS.Views.Draggabilly.findDestination($ele)
-      expect(destination.ele).toBe($ele.siblings().first())
-      expect(destination.attachMethod).toBe('after')
+    describe "findDestination", ->
+      it "correctly finds the drop target of a drag", ->
+        $ele = $('#unit-1')
+        $ele.offset(
+          top: $ele.offset().top + 10, left: $ele.offset().left
+        )
+        destination = CMS.Views.Draggabilly.findDestination($ele)
+        expect(destination.ele).toBe($('#unit-2'))
+        expect(destination.attachMethod).toBe('before')
 
-    it "reports a null destination on a failed drag", ->
-      $ele = $('.unit').first()
-      $ele.offset(
-        top: $ele.offset().top + 200, left: $ele.offset().left
-      )
-      destination = CMS.Views.Draggabilly.findDestination($ele)
-      expect(destination).toEqual(
-        ele: null
-        attachMethod: ""
-      )
+      it "can drag and drop across section boundaries", ->
+        $ele = $('#unit-1')
+        $ele.offset(
+          top: $('#unit-4').offset().top + 10
+          left: $ele.offset().left
+        )
+        destination = CMS.Views.Draggabilly.findDestination($ele)
+        expect(destination.ele).toBe($('#unit-4'))
+        expect(destination.attachMethod).toBe('after')
+
+      it "can drag into an empty list", ->
+        $ele = $('#unit-1')
+        $ele.offset(
+          top: $('#list-3').offset().top + 10
+          left: $ele.offset().left
+        )
+        destination = CMS.Views.Draggabilly.findDestination($ele)
+        expect(destination.ele).toBe($('#list-3'))
+        expect(destination.attachMethod).toBe('prepend')
+
+      it "reports a null destination on a failed drag", ->
+        $ele = $('#unit-1')
+        $ele.offset(
+          top: $ele.offset().top + 200, left: $ele.offset().left
+        )
+        destination = CMS.Views.Draggabilly.findDestination($ele)
+        expect(destination).toEqual(
+          ele: null
+          attachMethod: ""
+        )
+
+    describe "onDragStart", ->
+      it "sets the dragState to its default values", ->
+        expect(CMS.Views.Draggabilly.dragState).toEqual({})
+        # Call with some dummy data
+        CMS.Views.Draggabilly.onDragStart(
+          {element: $('#unit-1')},
+          null,
+          null
+        )
+        expect(CMS.Views.Draggabilly.dragState).toEqual(
+          offset: $('#unit-1').offset()
+          dropDestination: null,
+          expandTimer: null,
+          toExpand: null
+        )
+
+    describe "onDragMove", ->
+      it "clears the expand timer state", ->
+        timerSpy = spyOn(window, 'clearTimeout').andCallThrough()
+        $ele = $('#unit-1')
+        $ele.offset(
+          top: $ele.offset().top + 10
+          left: $ele.offset().left
+        )
+        CMS.Views.Draggabilly.onDragMove(
+          {element: $ele},
+          null,
+          null
+        )
+        expect(timerSpy).toHaveBeenCalled()
+        timerSpy.reset()
+
+      it "adds the correct CSS class to the drop destination", ->
+        $ele = $('#unit-1')
+        $ele.offset(
+          top: $ele.offset().top + 10, left: $ele.offset().left
+        )
+        CMS.Views.Draggabilly.onDragMove(
+          {element: $ele},
+          '',
+          ''
+        )
+        expect($('#unit-2')).toHaveClass('drop-target drop-target-before')
+
+    describe "onDragEnd", ->
+      beforeEach ->
+        @reorderSpy = spyOn(CMS.Views.Draggabilly, 'handleReorder')
+
+      afterEach ->
+        @reorderSpy.reset()
+
+      it "calls handleReorder on a successful drag", ->
+        $('#unit-1').offset(
+          top: $('#unit-1').offset().top + 10
+          left: $('#unit-1').offset().left
+        )
+        CMS.Views.Draggabilly.onDragEnd(
+          {element: $('#unit-1')},
+          null,
+          {x: $('#unit-1').offset().left}
+        )
+        expect(@reorderSpy).toHaveBeenCalled()
+
+      it "clears out the drag state", ->
+        CMS.Views.Draggabilly.onDragEnd(
+          {element: $('#unit-1')},
+          null,
+          null
+        )
+        expect(CMS.Views.Draggabilly.dragState).toEqual({})
+
+      it "sets the element to the correct position", ->
+        CMS.Views.Draggabilly.onDragEnd(
+          {element: $('#unit-1')},
+          null,
+          null
+        )
+        # Chrome sets the CSS to 'auto', but Firefox uses '0px'.
+        expect(['0px', 'auto']).toContain($('#unit-1').css('top'))
+        expect(['0px', 'auto']).toContain($('#unit-1').css('left'))
