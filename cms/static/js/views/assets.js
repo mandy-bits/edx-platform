@@ -74,8 +74,44 @@ var showUploadFeedback = function (event, percentComplete) {
     $('.upload-modal .progress-fill').html(percentVal);
 };
 
+function startServerFeedback(){
+    $('.status-infos').show();
+    $('.status-info').show();
+    updateStage(0);
+}
+
+function updateStage(stageNo){
+    var all = $('.status-infos').children();
+    all.eq(stageNo - 1).removeClass("in-progress").addClass("done");
+    all.eq(stageNo).removeClass("not-started").addClass("in-progress");
+}
+
+// Check for import status updates every `timemout` milliseconds, and update
+// the page accordingly.
+function getStatus(course, filename, timeout) {
+    var currentStage = 0;
+    var time = timeout || 500;
+    while (currentStage !== 2) {
+        setTimeout(function() {
+            $.ajax({
+                url: "/import_status",
+                success: function(data, textStatus, jqXHR) {
+                    if (0 < data["ImportStatus"] > currentStage) {
+                        currentStage = data["ImportStatus"] - 1;
+                        updateStage(data["ImportStatus"]);
+                    }
+                }
+            });
+        }, time);
+    }
+}
+
 var displayFinishedUpload = function (resp) {
     var asset = resp.asset;
+
+    if (xhr.status == 200) {
+        markAsLoaded();
+    }
 
     $('.upload-modal h1').html(gettext('Upload New File'));
     $('.upload-modal .embeddable-xml-input').val(asset.portable_url);
