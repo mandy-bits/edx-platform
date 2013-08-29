@@ -53,6 +53,7 @@ var startUpload = function (e) {
 
 var resetUploadModal = function () {
     $('.file-input').unbind('change', startUpload);
+    startServerFeedback();
 
     // Reset modal so it no longer displays information about previously
     // completed uploads.
@@ -75,30 +76,32 @@ var showUploadFeedback = function (event, percentComplete) {
 };
 
 function startServerFeedback(){
-    $('.status-infos').show();
+    $('.status-info-block').show();
     $('.status-info').show();
-    updateStage(0);
+    //getStatus(null, filename, 500);
 }
 
+
 function updateStage(stageNo){
-    var all = $('.status-infos').children();
-    all.eq(stageNo - 1).removeClass("in-progress").addClass("done");
-    all.eq(stageNo).removeClass("not-started").addClass("in-progress");
+    var all = $('.status-info-block').children();
+    all.slice(0, stageNo).removeClass("not-started").removeClass("in-progress").addClass("done");
+    all.eq(stageNo).removeClass("not-started").removeClass("done").addClass("in-progress");
 }
 
 // Check for import status updates every `timemout` milliseconds, and update
 // the page accordingly.
 function getStatus(course, filename, timeout) {
-    var currentStage = 0;
+    var currentStage = 1;
+    updateStage(currentStage);
     var time = timeout || 500;
     while (currentStage !== 2) {
         setTimeout(function() {
             $.ajax({
-                url: "/import_status",
+                url: "/import_status" + filename,
                 success: function(data, textStatus, jqXHR) {
                     if (0 < data["ImportStatus"] > currentStage) {
                         currentStage = data["ImportStatus"] - 1;
-                        updateStage(data["ImportStatus"]);
+                        updateStage(currentStage);
                     }
                 }
             });
