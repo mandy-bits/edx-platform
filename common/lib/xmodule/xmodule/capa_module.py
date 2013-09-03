@@ -152,6 +152,10 @@ class CapaFields(object):
         help="Source code for LaTeX and Word problems. This feature is not well-supported.",
         scope=Scope.settings
     )
+    text_customization = Dict(
+        help="String customization substitutions for particular locations",
+        scope=Scope.settings,
+        default=None)
 
 
 class CapaModule(CapaFields, XModule):
@@ -342,14 +346,20 @@ class CapaModule(CapaFields, XModule):
         Determine the name for the "check" button.
 
         Usually it is just "Check", but if this is the student's
-        final attempt, change the name to "Final Check"
+        final attempt, change the name to "Final Check".
+        The text can be customized by the text_customization setting.
         """
-        if self.max_attempts is not None:
-            final_check = (self.attempts >= self.max_attempts - 1)
-        else:
-            final_check = False
+        check = "Check"
+        final_check = "Final Check"
+        # Apply customizations if present
+        if self.text_customization:
+            check = self.text_customization.get('custom_check', check)
+            final_check = self.text_customization.get('custom_final_check', final_check)
 
-        return _("Final Check") if final_check else _("Check")
+        if self.max_attempts is not None and self.attempts >= self.max_attempts - 1:
+            return _(final_check)
+        else:
+            return _(check)
 
     def should_show_check_button(self):
         """
