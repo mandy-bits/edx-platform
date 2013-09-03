@@ -75,10 +75,10 @@ var showUploadFeedback = function (event, percentComplete) {
     $('.upload-modal .progress-fill').html(percentVal);
 };
 
-function startServerFeedback(){
+function startServerFeedback(url){
     $('.status-info-block').show();
     $('.status-info').show();
-    //getStatus(null, filename, 500);
+    getStatus(url, 500);
 }
 
 
@@ -90,14 +90,14 @@ function updateStage(stageNo){
 
 // Check for import status updates every `timemout` milliseconds, and update
 // the page accordingly.
-function getStatus(course, filename, timeout) {
+function getStatus(url, timeout) {
     var currentStage = 1;
     updateStage(currentStage);
     var time = timeout || 500;
     while (currentStage !== 2) {
         setTimeout(function() {
             $.ajax({
-                url: "/import_status" + filename,
+                url: url,
                 success: function(data, textStatus, jqXHR) {
                     if (0 < data["ImportStatus"] > currentStage) {
                         currentStage = data["ImportStatus"] - 1;
