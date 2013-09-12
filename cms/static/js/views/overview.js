@@ -241,22 +241,22 @@ $(document).ready(function() {
     // Section
     CMS.Views.Draggabilly.makeDraggable(
         '.courseware-section',
-        '.section-drag-handle',
+        'a.section-drag-handle',
         '.courseware-overview',
         'article.courseware-overview'
     );
     // Subsection
     CMS.Views.Draggabilly.makeDraggable(
         '.id-holder',
-        '.subsection-drag-handle',
+        'a.subsection-drag-handle',
         '.subsection-list > ol',
         '.courseware-section'
     );
     // Unit
     CMS.Views.Draggabilly.makeDraggable(
         '.unit',
-        '.unit-drag-handle',
-        'ol.sortable-unit-list',
-        'li.branch, article.subsection-body'
+        'a.unit-drag-handle',
+        '.sortable-unit-list',
+        'li.branch'
     );
 });
