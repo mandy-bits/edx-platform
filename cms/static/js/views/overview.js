@@ -256,7 +256,7 @@ $(document).ready(function() {
     CMS.Views.Draggabilly.makeDraggable(
         '.unit',
         'a.unit-drag-handle',
-        '.sortable-unit-list',
-        'li.branch'
+        'ol.sortable-unit-list',
+        'li.branch, article.subsection-body'
     );
 });
