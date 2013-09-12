@@ -678,7 +678,7 @@ body.course.outline {
   // ====================
 
   // UI: drag handles
-  .section-drag-handle, .draggable {
+  .drag-handle {
 
     &:hover, &:focus {
       cursor: move;
