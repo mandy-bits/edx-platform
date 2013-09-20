@@ -11,7 +11,10 @@ This def will enumerate through a passed in subsection and list all of the units
       subsection_units = subsection.get_children()
   %>
   % for unit in subsection_units:
-  <li class="leaf unit" data-id="${unit.location}" data-parent-id="${subsection.location.url()}">
+  <li class="courseware-unit leaf unit is-draggable" data-id="${unit.location}" data-parent-id="${subsection.location.url()}">
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+
     <%
       unit_state = compute_unit_state(unit)
       if unit.location == selected:
@@ -31,6 +34,8 @@ This def will enumerate through a passed in subsection and list all of the units
       </div>
       % endif
     </div>
+
+    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
   </li>
   % endfor
   <li>
