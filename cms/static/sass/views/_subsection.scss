@@ -1,7 +1,7 @@
 // studio - views - course subsection
 // ====================
 
-body.course.subsection {
+.course.subsection {
 
   .main-wrapper {
     margin-top: ($baseline*2);
@@ -398,6 +398,18 @@ body.course.subsection {
           color: $blue;
         }
       }
+    }
+  }
+
+  // UI: DnD - specific elems/cases - units
+  .courseware-unit {
+
+    .draggable-drop-indicator-before {
+      top: 0;
+    }
+
+    .draggable-drop-indicator-after {
+      bottom: 0;
     }
   }
 }
