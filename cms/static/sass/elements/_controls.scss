@@ -213,6 +213,7 @@
 
 // UI: elem is draggable
 .is-draggable {
+  @include transition(border-color $tmg-f2 ease-in-out 0, box-shadow $tmg-f2 ease-in-out 0);
   position: relative;
 
   .draggable-drop-indicator {
@@ -241,14 +242,25 @@
   }
 }
 
-// UI: drag states
+// UI: drag state - is dragging
 .is-dragging {
   @extend .ui-depth4;
   left: -($baseline/4);
-  box-shadow: 0 1px 2px 0 $blue-t2;
+  box-shadow: 0 1px 2px 0 $shadow-d1;
   cursor: move;
   opacity: 0.65;
-  border: 1px solid $blue-s1;
+  border: 1px solid $gray-d3;
+
+  // UI: condition - valid drop
+  &.valid-drop {
+    border-color: $blue-s1;
+    box-shadow: 0 1px 2px 0 $blue-t2;
+  }
+}
+
+// UI: drag state - was dragging
+.was-dragging {
+  @include transition(transform $tmg-f2 ease-in-out 0);
 }
 
 // UI: drag target
