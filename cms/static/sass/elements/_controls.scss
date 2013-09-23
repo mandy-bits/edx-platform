@@ -217,7 +217,7 @@
   position: relative;
 
   .draggable-drop-indicator {
-    @extend .ui-depth3;
+    @extend %ui-depth3;
     @include transition(opacity $tmg-f2 linear 0s);
     @include size(100%, auto);
     position: absolute;
@@ -225,7 +225,7 @@
     opacity: 0.0;
 
     *[class^="icon-caret"] {
-      @extend .t-icon5;
+      @extend %t-icon5;
       position: absolute;
       top: -11px;
       left: -($baseline/4);
@@ -244,7 +244,7 @@
 
 // UI: drag state - is dragging
 .is-dragging {
-  @extend .ui-depth4;
+  @extend %ui-depth4;
   left: -($baseline/4);
   box-shadow: 0 1px 2px 0 $shadow-d1;
   cursor: move;

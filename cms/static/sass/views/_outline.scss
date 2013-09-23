@@ -137,7 +137,7 @@
 
 
   .courseware-section {
-    @extend .ui-window;
+    @extend %ui-window;
     position: relative;
     margin-top: ($baseline);
     padding-bottom: ($baseline/2);
