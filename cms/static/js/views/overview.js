@@ -136,13 +136,13 @@ CMS.Views.Draggabilly = {
             var method = this.dragState.attachMethod;
             destination[method](ele);
             this.handleReorder(ele);
-            ele.removeClass('valid-drop');
         }
         // If the drag failed, send it back
         else {
             $('.was-dragging').removeClass('was-dragging');
             ele.addClass('was-dragging');
         }
+        ele.removeClass('valid-drop');
 
         // Everything in its right place
         ele.css({
