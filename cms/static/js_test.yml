@@ -56,6 +56,8 @@ lib_paths:
     - xmodule_js/src
     - xmodule_js/common_static/js/test/add_ajax_prefix.js
     - xmodule_js/common_static/js/src/utility.js
+    - xmodule_js/common_static/js/vendor/date.js
+    - xmodule_js/common_static/js/vendor/draggabilly.pkgd.js
 
 # Paths to source JavaScript files
 src_paths:
