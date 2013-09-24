@@ -153,34 +153,9 @@
           padding-bottom: 0;
         }
 
-        // TYPE: upload
-        &.item-progresspoint-upload {
+        // TYPE: success
+        &.item-progresspoint-success {
 
-          // elem - safe to leave message
-          .msg-leaving {
-            @include transition(opacity $tmg-f2 ease-in-out 0);
-            opacity: 0.0;
-            display: none;
-
-            .title {
-              @extend .t-title7;
-              font-weight: 600;
-              margin-bottom: ($baseline/4);
-            }
-
-            .copy {
-              @extend .t-copy-sub1;
-            }
-          }
-
-          // STATE: complete
-          &.is-complete {
-
-            .msg-leaving {
-              opacity: 1.0;
-              display: block;
-            }
-          }
         }
 
 
@@ -188,7 +163,7 @@
         &.is-not-started {
           opacity: 0.5;
 
-          .icon-check, .icon-warning-sign {
+          .icon-warning-sign {
             visibility: hidden;
             opacity: 0.0;
           }
@@ -197,12 +172,16 @@
             visibility: visible;
             opacity: 1.0;
           }
+
+          .icon-check {
+            opacity: 0.3;
+          }
         }
 
         // STATE: started
         &.is-started {
 
-          .icon-check, .icon-warning-sign  {
+          .icon-warning-sign  {
             visibility: hidden;
             opacity: 0.0;
           }
@@ -216,12 +195,12 @@
         // STATE: completed
         &.is-complete {
 
-          .icon-check {
+          .icon-cog {
             visibility: visible;
             opacity: 1.0;
           }
 
-          .icon-cog, .icon-warning-sign {
+          .icon-warning-sign {
             visibility: hidden;
             opacity: 0.0;
           }
@@ -238,7 +217,7 @@
         // STATE: error
         &.has-error {
 
-          .icon-check, .icon-cog {
+          .icon-cog {
             visibility: hidden;
             opacity: 0.0;
           }
