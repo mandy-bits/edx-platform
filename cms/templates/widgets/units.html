@@ -13,7 +13,7 @@ This def will enumerate through a passed in subsection and list all of the units
   % for unit in subsection_units:
   <li class="courseware-unit leaf unit is-draggable" data-id="${unit.location}" data-parent-id="${subsection.location.url()}">
 
-    <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+    <%include file="_ui-dnd-indicator-before.html" />
 
     <%
       unit_state = compute_unit_state(unit)
@@ -35,7 +35,7 @@ This def will enumerate through a passed in subsection and list all of the units
       % endif
     </div>
 
-    <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+    <%include file="_ui-dnd-indicator-after.html" />
   </li>
   % endfor
   <li>

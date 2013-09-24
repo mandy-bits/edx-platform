@@ -151,7 +151,7 @@
         % for section in sections:
         <section class="courseware-section branch is-draggable" data-id="${section.location}" data-parent-id="${context_course.location.url()}">
 
-          <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+          <%include file="widgets/_ui-dnd-indicator-before.html" />
 
           <header>
           <a href="#" data-tooltip="${_('Expand/collapse this section')}" class="expand-collapse-icon collapse"></a>
@@ -194,7 +194,7 @@
               % for subsection in section.get_children():
               <li class="courseware-subsection branch collapsed id-holder is-draggable" data-id="${subsection.location}" data-parent-id="${section.location.url()}">
 
-                <span class="draggable-drop-indicator draggable-drop-indicator-before"><i class="icon-caret-right"></i></span>
+                <%include file="widgets/_ui-dnd-indicator-before.html" />
 
                 <div class="section-item">
                   <div class="details">
@@ -215,13 +215,13 @@
                 </div>
                 ${units.enum_units(subsection)}
 
-                <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+                <%include file="widgets/_ui-dnd-indicator-after.html" />
               </li>
               % endfor
             </ol>
           </div>
 
-          <span class="draggable-drop-indicator draggable-drop-indicator-after"><i class="icon-caret-right"></i></span>
+          <%include file="widgets/_ui-dnd-indicator-after.html" />
         </section>
         % endfor
       </article>
