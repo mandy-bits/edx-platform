@@ -678,6 +678,11 @@
     .draggable-drop-indicator-after {
       bottom: -13px;
     }
+
+    // CASE: DnD - empty subsection with unit dropping
+    .drop-target-prepend .draggable-drop-indicator-initial {
+      opacity: 1.0;
+    }
   }
 
   // UI: DnD - specific elems/cases - subsection
@@ -689,6 +694,11 @@
 
     .draggable-drop-indicator-after {
       bottom: 0;
+    }
+
+    // CASE: DnD - empty subsection with unit dropping
+    .drop-target-prepend .draggable-drop-indicator-initial {
+      opacity: 1.0;
     }
   }
 
@@ -702,5 +712,10 @@
     .draggable-drop-indicator-after {
       bottom: 0;
     }
+  }
+
+  // UI: DnD - specific elems/cases - empty parents splint
+  .ui-splint-indicator {
+    position: relative;
   }
 }

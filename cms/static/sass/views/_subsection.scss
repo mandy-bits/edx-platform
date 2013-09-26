@@ -412,4 +412,9 @@
       bottom: 0;
     }
   }
+
+  // UI: DnD - specific elems/cases - empty parents initial drop indicator
+  .draggable-drop-indicator-initial {
+    display: none;
+  }
 }

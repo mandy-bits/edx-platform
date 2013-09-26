@@ -190,7 +190,7 @@
                 <span class="new-folder-icon"></span>${_("New Subsection")}
               </a>
             </div>
-            <ol data-id="${section.location.url()}">
+            <ol class="sortable-subsection-list" data-id="${section.location.url()}">
               % for subsection in section.get_children():
               <li class="courseware-subsection branch collapsed id-holder is-draggable" data-id="${subsection.location}" data-parent-id="${section.location.url()}">
 
@@ -218,6 +218,9 @@
                 <%include file="widgets/_ui-dnd-indicator-after.html" />
               </li>
               % endfor
+              <li class="ui-splint ui-splint-indicator">
+                <%include file="widgets/_ui-dnd-indicator-initial.html" />
+              </li>
             </ol>
           </div>
 
