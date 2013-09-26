@@ -1,5 +1,7 @@
 CMS.Views.Draggabilly = {
     droppableClasses: 'drop-target drop-target-prepend drop-target-before drop-target-after',
+    validDropClass: "valid-drop",
+    expandOnDropClass: "expand-on-drop",
 
     /*
      * Determine information about where to drop the currently dragged
@@ -88,6 +90,12 @@ CMS.Views.Draggabilly = {
             // If dragging to an empty section, the parent section
             parentList: null
         };
+        if (!ele.hasClass('collapsed')) {
+            ele.addClass('collapsed');
+            ele.find('.expand-collapse-icon').addClass('expand').removeClass('collapse');
+            // onDragStart gets called again after the collapse, so we can't just store a variable in the dragState.
+            ele.addClass(this.expandOnDropClass);
+        }
     },
 
     onDragMove: function(draggie, event, pointer) {
@@ -104,8 +112,7 @@ CMS.Views.Draggabilly = {
         else if(!this.dragState.toExpand || parentList[0] !== this.dragState.toExpand[0]) {
             clearTimeout(this.dragState.expandTimer);
             this.dragState.expandTimer = setTimeout(function() {
-                parentList.removeClass('collapsed');
-                parentList.find('.expand-collapse-icon').removeClass('expand').addClass('collapse');
+                this.expandElement(parentList);
             }, 400);
             this.dragState.toExpand = parentList;
         }
@@ -115,13 +122,13 @@ CMS.Views.Draggabilly = {
         }
         // Mark the new destination
         if(destinationEle && this.pointerInBounds(pointer, ele)) {
-            ele.addClass('valid-drop');
+            ele.addClass(this.validDropClass);
             destinationEle.addClass('drop-target drop-target-' + destinationInfo.attachMethod);
             this.dragState.attachMethod = destinationInfo.attachMethod;
             this.dragState.dropDestination = destinationEle;
         }
         else {
-            ele.removeClass('valid-drop');
+            ele.removeClass(this.validDropClass);
         }
     },
 
@@ -144,7 +151,11 @@ CMS.Views.Draggabilly = {
             $('.was-dragging').removeClass('was-dragging');
             ele.addClass('was-dragging');
         }
-        ele.removeClass('valid-drop');
+        ele.removeClass(this.validDropClass);
+        if (ele.hasClass(this.expandOnDropClass)) {
+            this.expandElement(ele);
+            ele.removeClass(this.expandOnDropClass);
+        }
 
         // Everything in its right place
         ele.css({
@@ -162,6 +173,11 @@ CMS.Views.Draggabilly = {
 
     pointerInBounds: function (pointer, ele) {
         return pointer.x >= ele.offset().left && pointer.x < ele.offset().left + ele.width();
+    },
+
+    expandElement: function (ele) {
+        ele.removeClass('collapsed');
+        ele.find('.expand-collapse-icon').removeClass('expand').addClass('collapse');
     },
 
     /*
