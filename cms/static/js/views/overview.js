@@ -99,6 +99,19 @@ CMS.Views.Draggabilly = {
     },
 
     onDragMove: function(draggie, event, pointer) {
+        // Handle scrolling of the browser.
+        var scrollAmount = 0;
+        if (window.screenY + window.innerHeight < pointer.y) {
+            scrollAmount = 10;
+        }
+        else if (window.screenY > pointer.y){
+            scrollAmount = -10;
+        }
+        if (scrollAmount !== 0) {
+            window.scrollBy(0, scrollAmount);
+            return;
+        }
+
         var ele = $(draggie.element);
         var destinationInfo = this.findDestination(ele);
         var destinationEle = destinationInfo.ele;
