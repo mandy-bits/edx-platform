@@ -185,7 +185,7 @@ describe "Course Overview", ->
         CMS.Views.Draggabilly.onDragMove(
           {element: $ele},
           null,
-          null
+            {x: $ele.offset().left}
         )
         expect(timerSpy).toHaveBeenCalled()
         timerSpy.reset()
@@ -196,11 +196,21 @@ describe "Course Overview", ->
           top: $ele.offset().top + 10, left: $ele.offset().left
         )
         CMS.Views.Draggabilly.onDragMove(
-          {element: $ele},
-          '',
-          ''
+          {element: $ele}, '', {x: $ele.offset().left}
         )
         expect($('#unit-2')).toHaveClass('drop-target drop-target-before')
+        expect($ele).toHaveClass('valid-drop')
+
+      it "does not add CSS class to the drop destination if out of bounds", ->
+        $ele = $('#unit-1')
+        $ele.offset(
+          top: $ele.offset().top + 10, left: $ele.offset().left
+        )
+        CMS.Views.Draggabilly.onDragMove(
+            {element: $ele}, '', {x: $ele.offset().left - 3}
+        )
+        expect($('#unit-2')).not.toHaveClass('drop-target drop-target-before')
+        expect($ele).not.toHaveClass('valid-drop')
 
     describe "onDragEnd", ->
       beforeEach ->
