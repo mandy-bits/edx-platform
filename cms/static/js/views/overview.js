@@ -114,11 +114,14 @@ CMS.Views.Draggabilly = {
             this.dragState.dropDestination.removeClass(this.droppableClasses);
         }
         // Mark the new destination
-        if(destinationEle) {
+        if(destinationEle && this.pointerInBounds(pointer, ele)) {
             ele.addClass('valid-drop');
             destinationEle.addClass('drop-target drop-target-' + destinationInfo.attachMethod);
             this.dragState.attachMethod = destinationInfo.attachMethod;
             this.dragState.dropDestination = destinationEle;
+        }
+        else {
+            ele.removeClass('valid-drop');
         }
     },
 
@@ -127,8 +130,7 @@ CMS.Views.Draggabilly = {
         var destination = this.dragState.dropDestination;
 
         // If the drag succeeded, rearrange the DOM and send the result.
-        if(destination && pointer.x >= ele.offset().left
-           && pointer.x < ele.offset().left + ele.width()) {
+        if(destination && this.pointerInBounds(pointer, ele)) {
             // Make sure we don't drop into a collapsed element
             if(this.dragState.parentList) {
                 this.dragState.parentList.removeClass('collapsed');
@@ -156,6 +158,10 @@ CMS.Views.Draggabilly = {
         }
         clearTimeout(this.dragState.expandTimer);
         this.dragState = {};
+    },
+
+    pointerInBounds: function (pointer, ele) {
+        return pointer.x >= ele.offset().left && pointer.x < ele.offset().left + ele.width();
     },
 
     /*
