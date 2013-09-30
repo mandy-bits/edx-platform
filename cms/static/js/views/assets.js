@@ -83,26 +83,52 @@ var startServerFeedback = function (url){
 };
 
 /**
+ * Toggle the spin on the progress cog.
+ * @param {boolean} isSpinning Turns cog spin on if true, off otherwise.
+ */
+var updateCog = function (elem, isSpinning) {
+    var cogI = elem.find('i.icon-cog');
+    if (isSpinning) { cogI.addClass("icon-spin");}
+    else { cogI.removeClass("icon-spin");}
+};
+
+/**
  * Manipulate the DOM to reflect current status of upload.
  * @param {int} stageNo Current stage.
  */
 var updateStage = function (stageNo){
-    var updateCog = function (elem, isSpinning) {
-        var cogI = elem.find('i.icon-cog');
-        if (isSpinning) { cogI.addClass("icon-spin");}
-        else { cogI.removeClass("icon-spin");}
-    };
     var all = $('ol.status-progress').children();
     var prevList = all.slice(0, stageNo);
     _.map(prevList, function (elem){
         $(elem).removeClass("is-not-started").removeClass("is-started").addClass("is-complete");
-        updateCog( $(elem), false);
+        updateCog($(elem), false);
     });
     var curList = all.eq(stageNo);
     curList.removeClass("is-not-started").addClass("is-started");
     updateCog(curList, true);
 
 };
+
+/**
+ * Give error message at the list element that corresponds to the stage where
+ * the error occurred.
+ * @param {int} stageNo Stage of import process at which error occured.
+ * @param {string} msg Error message to display.
+ */
+var stageError = function (stageNo, msg) {
+    var all = $('ol.status-progress').children();
+    // Make all stages up to, and including, the error stage 'complete'.
+    var prevList = all.slice(0, stageNo + 1);
+    _.map(prevList, function (elem){
+        $(elem).removeClass("is-not-started").removeClass("is-started").addClass("is-complete");
+        updateCog($(elem), false);
+    });
+    var message = msg || "There was an error with the upload";
+    var elem = $('ol.status-progress').children().eq(stageNo);
+    elem.removeClass('is-started').addClass('has-error');
+    elem.find('p.copy').html(message);
+};
+
 
 /**
  * Check for import status updates every `timemout` milliseconds, and update
@@ -114,6 +140,7 @@ var updateStage = function (stageNo){
  */
 var getStatus = function (url, timeout, stage) {
     if (currentStage == 3 ) { return ;}
+    if (window.stopGetStatus) { return ;}
     var currentStage = stage || 0;
     updateStage(currentStage);
     var time = timeout || 1000;
@@ -124,6 +151,17 @@ var getStatus = function (url, timeout, stage) {
             }, time);
         }
     );
+};
+
+/**
+ * Update DOM to set all stages as complete.
+ */
+var displayFinishedImport = function () {
+    var all = $('ol.status-progress').children();
+    _.map(all, function (elem){
+        $(elem).removeClass("is-not-started").removeClass("is-started").addClass("is-complete");
+        updateCog($(elem), false);
+    });
 };
 
 var displayFinishedUpload = function (resp) {

@@ -53,20 +53,6 @@ def import_course(request, org, course, name):
     """
     location = get_location_and_verify_access(request, org, course, name)
 
-    @contextmanager
-    def wfile(filename, dirname):
-        """
-        A with-context that creates `filename` on entry and removes it on exit.
-        `filename` is truncted on creation. Additionally removes dirname on
-        exit.
-        """
-        open(filename, "w").close()
-        try:
-            yield filename
-        finally:
-            os.remove(filename)
-            shutil.rmtree(dirname)
-
     if request.method == 'POST':
 
         data_root = path(settings.GITHUB_REPO_ROOT)
@@ -76,7 +62,10 @@ def import_course(request, org, course, name):
         filename = request.FILES['course-data'].name
         if not filename.endswith('.tar.gz'):
             return JsonResponse(
-                {'ErrMsg': 'We only support uploading a .tar.gz file.'},
+                {
+                    'ErrMsg': 'We only support uploading a .tar.gz file.',
+                    'Stage': 1
+                },
                 status=415
             )
         temp_filepath = course_dir / filename
@@ -110,7 +99,10 @@ def import_course(request, org, course, name):
                     size
                 )
                 return JsonResponse(
-                    {'ErrMsg': 'File upload corrupted. Please try again'},
+                    {
+                        'ErrMsg': 'File upload corrupted. Please try again',
+                        'Stage': 1
+                    },
                     status=409
                 )
             # The last request sometimes comes twice. This happens because
@@ -188,7 +180,10 @@ def import_course(request, org, course, name):
 
                 if not dirpath:
                     return JsonResponse(
-                        {'ErrMsg': 'Could not find the course.xml file in the package.'},
+                        {
+                            'ErrMsg': 'Could not find the course.xml file in the package.',
+                            'Stage': 2
+                        },
                         status=415
                     )
 
@@ -215,6 +210,16 @@ def import_course(request, org, course, name):
 
                 create_all_course_groups(request.user, course_items[0].location)
                 logging.debug('created all course groups at {0}'.format(course_items[0].location))
+
+            # Send errors to client with stage at which error occured.
+            except Exception as exception:   #pylint: disable=W0703
+                return JsonResponse(
+                    {
+                        'ErrMsg': str(exception),
+                        'Stage': session_status[key]
+                    },
+                    status=400
+                )
 
             finally:
                 shutil.rmtree(course_dir)
