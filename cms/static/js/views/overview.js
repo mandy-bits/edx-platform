@@ -101,10 +101,10 @@ CMS.Views.Draggabilly = {
     onDragMove: function(draggie, event, pointer) {
         // Handle scrolling of the browser.
         var scrollAmount = 0;
-        if (window.screenY + window.innerHeight < pointer.y) {
+        if (window.screenY + window.innerHeight < pointer.clientY) {
             scrollAmount = 10;
         }
-        else if (window.screenY > pointer.y){
+        else if (window.screenY > pointer.clientY){
             scrollAmount = -10;
         }
         if (scrollAmount !== 0) {
@@ -185,7 +185,7 @@ CMS.Views.Draggabilly = {
     },
 
     pointerInBounds: function (pointer, ele) {
-        return pointer.x >= ele.offset().left && pointer.x < ele.offset().left + ele.width();
+        return pointer.clientX >= ele.offset().left && pointer.clientX < ele.offset().left + ele.width();
     },
 
     expandElement: function (ele) {
