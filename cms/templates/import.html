@@ -146,6 +146,7 @@
 (function() {
 
 var file;
+var bar = $('.progress-bar');
 var fill = $('.progress-fill');
 var percent = $('.percent');
 var status = $('#status');
@@ -193,7 +194,9 @@ $('#fileupload').fileupload({
                         else {
                             alert('${_("Your import has failed.")}\n\n' + errMsg);
                         }
+                        //submitBtn.show();
                         chooseBtn.html('${_("Choose new file")}').show();
+                        bar.hide();
                     } 
                 });
             });
@@ -205,6 +208,7 @@ $('#fileupload').fileupload({
     progressall: function(e, data){
         var doneAt;
         var percentInt = data.loaded / data.total * 100
+        var percentVal = parseInt(percentInt, 10) + "%";
         // Firefox makes ProgressEvent.loaded equal ProgressEvent.total only
         // after receiving a response from the server (see Mozilla bug 637002),
         // so for Firefox we jump the gun a little.
@@ -214,10 +218,16 @@ $('#fileupload').fileupload({
             doneAt = 99;
         }
         if (percentInt >= doneAt) {
+            bar.hide();
             startServerFeedback(feedbackUrl.replace("fillerName", file.name));
-        } 
+        } else {
+            bar.show();
+            fill.width(percentVal);
+            percent.html(percentVal);
+        }
     },
     done: function(e, data){
+        bar.hide();
         window.onbeforeunload = null;
         displayFinishedImport();
         alert('${_("Your import was successful.")}');
