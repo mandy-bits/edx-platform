@@ -126,7 +126,7 @@ var stageError = function (stageNo, msg) {
     var message = msg || "There was an error with the upload";
     var elem = $('ol.status-progress').children().eq(stageNo);
     elem.removeClass('is-started').addClass('has-error');
-    elem.find('p.copy').html(message);
+    elem.find('p.copy').hide().after("<p class='copy error'>" + message + "</p>");
 };
 
 
@@ -154,14 +154,34 @@ var getStatus = function (url, timeout, stage) {
 };
 
 /**
- * Update DOM to set all stages as complete.
+ * Update DOM to set all stages as complete, and stop asking for status
+ * updates.
  */
 var displayFinishedImport = function () {
+    window.stopGetStatus = true;
     var all = $('ol.status-progress').children();
     _.map(all, function (elem){
         $(elem).removeClass("is-not-started").removeClass("is-started").addClass("is-complete");
         updateCog($(elem), false);
     });
+};
+
+/**
+ * Update DOM to set all stages as not-started (for retrying an upload that
+ * failed).
+ */
+var clearImportDisplay = function () {
+    var all = $('ol.status-progress').children();
+    _.map(all, function (elem){
+        $(elem).removeClass("is-complete").
+            removeClass("is-started").
+            removeClass("has-error").
+            addClass("is-not-started");
+        $(elem).find('p.error').remove(); // remove error messages
+        $(elem).find('p.copy').show();
+        updateCog($(elem), false);
+    });
+    window.stopGetStatus = false;
 };
 
 var displayFinishedUpload = function (resp) {
