@@ -1,3 +1,4 @@
+"use strict";
 // This code is temporarily moved out of asset_index.html
 // to fix AWS pipelining issues. We can move it back after RequireJS is integrated.
 $(document).ready(function() {
@@ -75,36 +76,55 @@ var showUploadFeedback = function (event, percentComplete) {
     $('.upload-modal .progress-fill').html(percentVal);
 };
 
-function startServerFeedback(url){
-    $('.status-info-block').show();
+var startServerFeedback = function (url){
+    $('div.wrapper-status').removeClass('is-hidden');
     $('.status-info').show();
     getStatus(url, 500);
-}
+};
 
+/**
+ * Manipulate the DOM to reflect current status of upload.
+ * @param {int} stageNo Current stage.
+ */
+var updateStage = function (stageNo){
+    var updateCog = function (elem, isSpinning) {
+        var cogI = elem.find('i.icon-cog');
+        if (isSpinning) { cogI.addClass("icon-spin");}
+        else { cogI.removeClass("icon-spin");}
+    };
+    var all = $('ol.status-progress').children();
+    var prevList = all.slice(0, stageNo);
+    _.map(prevList, function (elem){
+        $(elem).removeClass("is-not-started").removeClass("is-started").addClass("is-complete");
+        updateCog( $(elem), false);
+    });
+    var curList = all.eq(stageNo);
+    curList.removeClass("is-not-started").addClass("is-started");
+    updateCog(curList, true);
 
-function updateStage(stageNo){
-    var all = $('.status-info-block').children();
-    all.slice(0, stageNo).removeClass("not-started").removeClass("in-progress").addClass("done");
-    all.eq(stageNo).removeClass("not-started").removeClass("done").addClass("in-progress");
-}
+};
 
-// Check for import status updates every `timemout` milliseconds, and update
-// the page accordingly.
-function getStatus(url, timeout, stage) {
-    console.log("getStatus called");
-    console.log(stage);
+/**
+ * Check for import status updates every `timemout` milliseconds, and update
+ * the page accordingly.
+ * @param {string} url Url to call for status updates.
+ * @param {int} timeout Number of milliseconds to wait in between ajax calls
+ *     for new updates.
+ * @param {int} stage Starting stage.
+ */
+var getStatus = function (url, timeout, stage) {
     if (currentStage == 3 ) { return ;}
     var currentStage = stage || 0;
-    // updateStage(currentStage);
+    updateStage(currentStage);
     var time = timeout || 1000;
-    $.getJSON( url,
+    $.getJSON(url,
         function (data) {
             setTimeout(function () {
                 getStatus(url, time, data["ImportStatus"]);
             }, time);
         }
     );
-}
+};
 
 var displayFinishedUpload = function (resp) {
     var asset = resp.asset;
