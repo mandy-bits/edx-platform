@@ -101,7 +101,7 @@
                 <p class="copy">${_("Replacing previous course content with imported content")}</p>
               </div>
             </li>
-            <li class="item-progresspoint item-progresspoint-success is-not-started">
+            <li class="item-progresspoint item-progresspoint-success has-actions is-not-started">
               <span class="deco status-visual">
                 <i class="icon-check"></i>
               </span>
@@ -110,6 +110,12 @@
                 <h3 class="title">${_("Success")}</h3>
                 <p class="copy">${_("Your imported content has now replaced all other course content")}</p>
               </div>
+
+              <ul class="list-actions">
+                <li class="item-action">
+                  <a href="" class="action action-primary">${_("View Updated Outline")}</a>
+                </li>
+              </ul>
             </li>
           </ol>
         </div>
@@ -197,7 +203,7 @@ $('#fileupload').fileupload({
                         //submitBtn.show();
                         chooseBtn.html('${_("Choose new file")}').show();
                         bar.hide();
-                    } 
+                    }
                 });
             });
         } else {
