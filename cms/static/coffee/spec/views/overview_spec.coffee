@@ -220,19 +220,20 @@ describe "Course Overview", ->
         expect($ele).not.toHaveClass('valid-drop')
 
       it "scrolls up if necessary", ->
-        window.scrollBy(0, 30)
-        origY = window.pageYOffset
+        scrollSpy = spyOn(window, 'scrollBy').andCallThrough()
         CMS.Views.Draggabilly.onDragMove(
           {element: $('#unit-1')}, '', {clientY: 2}
         )
-        expect(window.pageYOffset).toBe(origY - 10)
+        expect(scrollSpy).toHaveBeenCalledWith(0, -10)
 
       it "scrolls down if necessary", ->
-        origY = window.pageYOffset
+        height = Math.max(window.innerHeight, 100);
+        spyOn(window, 'innerHeight').andReturn(height)
+        scrollSpy = spyOn(window, 'scrollBy').andCallThrough()
         CMS.Views.Draggabilly.onDragMove(
-            {element: $('#unit-1')}, '', {clientY: 1000}
+            {element: $('#unit-1')}, '', {clientY: (height - 5)}
         )
-        expect(window.pageYOffset).toBe(origY + 10)
+        expect(scrollSpy).toHaveBeenCalledWith(0, 10)
 
     describe "onDragEnd", ->
       beforeEach ->
