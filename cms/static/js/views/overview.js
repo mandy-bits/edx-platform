@@ -24,7 +24,7 @@ CMS.Views.Draggabilly = {
             // position of the container
             var parentList = container.parents(ele.data('parent-location-selector')).first();
             if(parentList.hasClass('collapsed')) {
-                if(Math.abs(eleY - parentList.offset().top) < 50) {
+                if(Math.abs(eleY - parentList.offset().top) < 10) {
                     return {
                         ele: container,
                         attachMethod: 'prepend',
@@ -81,10 +81,6 @@ CMS.Views.Draggabilly = {
         this.dragState = {
             // Which element will be dropped into/onto on success
             dropDestination: null,
-            // Timer if we're hovering over a collapsed section
-            expandTimer: null,
-            // The list which will be expanded on hover
-            toExpand: null,
             // How we attach to the destination: 'before', 'after', 'prepend'
             attachMethod: '',
             // If dragging to an empty section, the parent section
@@ -116,20 +112,8 @@ CMS.Views.Draggabilly = {
         var ele = $(draggie.element);
         var destinationInfo = this.findDestination(ele);
         var destinationEle = destinationInfo.ele;
-        var parentList = this.dragState.parentList = destinationInfo.parentList;
-        // Clear the timer if we're not hovering over any element
-        if(!parentList) {
-            clearTimeout(this.dragState.expandTimer);
-        }
-        // If we're hovering over a new element, clear the timer and
-        // set a new one
-        else if(!this.dragState.toExpand || parentList[0] !== this.dragState.toExpand[0]) {
-            clearTimeout(this.dragState.expandTimer);
-            this.dragState.expandTimer = setTimeout(function() {
-                this.expandElement(parentList);
-            }, 400);
-            this.dragState.toExpand = parentList;
-        }
+        this.dragState.parentList = destinationInfo.parentList;
+
         // Clear out the old destination
         if(this.dragState.dropDestination) {
             this.dragState.dropDestination.removeClass(this.droppableClasses);
@@ -154,7 +138,7 @@ CMS.Views.Draggabilly = {
         if(destination && this.pointerInBounds(pointer, ele)) {
             // Make sure we don't drop into a collapsed element
             if(this.dragState.parentList) {
-                this.dragState.parentList.removeClass('collapsed');
+                this.expandElement(this.dragState.parentList);
             }
             var method = this.dragState.attachMethod;
             destination[method](ele);
@@ -181,7 +165,6 @@ CMS.Views.Draggabilly = {
         if(this.dragState.dropDestination) {
             this.dragState.dropDestination.removeClass(this.droppableClasses);
         }
-        clearTimeout(this.dragState.expandTimer);
         this.dragState = {};
     },
 
