@@ -185,7 +185,7 @@ describe "Course Overview", ->
         CMS.Views.Draggabilly.onDragMove(
           {element: $ele},
           null,
-            {x: $ele.offset().left}
+            {clientX: $ele.offset().left}
         )
         expect(timerSpy).toHaveBeenCalled()
         timerSpy.reset()
@@ -196,7 +196,7 @@ describe "Course Overview", ->
           top: $ele.offset().top + 10, left: $ele.offset().left
         )
         CMS.Views.Draggabilly.onDragMove(
-          {element: $ele}, '', {x: $ele.offset().left}
+          {element: $ele}, '', {clientX: $ele.offset().left}
         )
         expect($('#unit-2')).toHaveClass('drop-target drop-target-before')
         expect($ele).toHaveClass('valid-drop')
@@ -207,7 +207,7 @@ describe "Course Overview", ->
           top: $ele.offset().top + 10, left: $ele.offset().left
         )
         CMS.Views.Draggabilly.onDragMove(
-            {element: $ele}, '', {x: $ele.offset().left - 3}
+            {element: $ele}, '', {clientX: $ele.offset().left - 3}
         )
         expect($('#unit-2')).not.toHaveClass('drop-target drop-target-before')
         expect($ele).not.toHaveClass('valid-drop')
@@ -227,7 +227,7 @@ describe "Course Overview", ->
         CMS.Views.Draggabilly.onDragEnd(
           {element: $('#unit-1')},
           null,
-          {x: $('#unit-1').offset().left}
+          {clientX: $('#unit-1').offset().left}
         )
         expect(@reorderSpy).toHaveBeenCalled()
 
