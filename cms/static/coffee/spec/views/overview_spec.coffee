@@ -46,21 +46,23 @@ describe "Course Overview", ->
         """
 
         appendSetFixtures """
-          <div class="subsection-list">
+          <ol>
+          <li class="subsection-list branch" id="subsection-1">
             <ol class="sortable-unit-list" id="list-1" data-id="parent-list-id-1">
               <li class="unit" id="unit-1" data-id="first-unit-id" data-parent-id="parent-list-id-1"></li>
               <li class="unit" id="unit-2" data-id="second-unit-id" data-parent-id="parent-list-id-1"></li>
               <li class="unit" id="unit-3" data-id="third-unit-id" data-parent-id="parent-list-id-1"></li>
             </ol>
-          </div>
-          </div class="subsection-list">
+          </li>
+          <li class="subsection-list branch" id="subsection-2">
             <ol class="sortable-unit-list" id="list-2" data-id="parent-list-id-2">
               <li class="unit" id="unit-4" data-id="first-unit-id" data-parent-id="parent-list-id-2"></li>
             </ol>
-          </div>
-          <div class="subsection-list">
+          </li>
+          <li class="subsection-list branch" id="subsection-3">
             <ol class="sortable-unit-list" id="list-3" data-id="parent-list-id-3"></ol>
-          </div>
+          </li>
+          </ol>
         """#"
 
         spyOn(window, 'saveSetSectionScheduleDate').andCallThrough()
@@ -157,6 +159,18 @@ describe "Course Overview", ->
           attachMethod: ""
         )
 
+      it "can drag into a collapsed list", ->
+        $('#subsection-2').addClass('collapsed')
+        $ele = $('#unit-2')
+        $ele.offset(
+          top: $('#subsection-2').offset().top + 3
+          left: $ele.offset().left
+        )
+        destination = CMS.Views.Draggabilly.findDestination($ele)
+        expect(destination.ele).toBe($('#list-2'))
+        expect(destination.parentList).toBe($('#subsection-2'))
+        expect(destination.attachMethod).toBe('prepend')
+
     describe "onDragStart", ->
       it "sets the dragState to its default values", ->
         expect(CMS.Views.Draggabilly.dragState).toEqual({})
@@ -171,6 +185,16 @@ describe "Course Overview", ->
           attachMethod: '',
           parentList: null
         )
+
+      it "collapses expanded elements", ->
+        expect($('#subsection-1')).not.toHaveClass('collapsed')
+        CMS.Views.Draggabilly.onDragStart(
+          {element: $('#subsection-1')},
+          null,
+          null
+        )
+        expect($('#subsection-1')).toHaveClass('collapsed')
+        expect($('#subsection-1')).toHaveClass('expand-on-drop')
 
     describe "onDragMove", ->
       it "adds the correct CSS class to the drop destination", ->
@@ -194,6 +218,21 @@ describe "Course Overview", ->
         )
         expect($('#unit-2')).not.toHaveClass('drop-target drop-target-before')
         expect($ele).not.toHaveClass('valid-drop')
+
+      it "scrolls up if necessary", ->
+        window.scrollBy(0, 30)
+        origY = window.pageYOffset
+        CMS.Views.Draggabilly.onDragMove(
+          {element: $('#unit-1')}, '', {clientY: 2}
+        )
+        expect(window.pageYOffset).toBe(origY - 10)
+
+      it "scrolls down if necessary", ->
+        origY = window.pageYOffset
+        CMS.Views.Draggabilly.onDragMove(
+            {element: $('#unit-1')}, '', {clientY: 1000}
+        )
+        expect(window.pageYOffset).toBe(origY + 10)
 
     describe "onDragEnd", ->
       beforeEach ->
@@ -231,3 +270,26 @@ describe "Course Overview", ->
         # Chrome sets the CSS to 'auto', but Firefox uses '0px'.
         expect(['0px', 'auto']).toContain($('#unit-1').css('top'))
         expect(['0px', 'auto']).toContain($('#unit-1').css('left'))
+
+      it "expands an element if it was collapsed on drag start", ->
+        $('#subsection-1').addClass('collapsed')
+        $('#subsection-1').addClass('expand-on-drop')
+        CMS.Views.Draggabilly.onDragEnd(
+          {element: $('#subsection-1')},
+          null,
+          null
+        )
+        expect($('#subsection-1')).not.toHaveClass('collapsed')
+        expect($('#subsection-1')).not.toHaveClass('expand-on-drop')
+
+      it "expands a collapsed element when something is dropped in it", ->
+        $('#subsection-2').addClass('collapsed')
+        CMS.Views.Draggabilly.dragState.dropDestination = $('#list-2')
+        CMS.Views.Draggabilly.dragState.attachMethod = "prepend"
+        CMS.Views.Draggabilly.dragState.parentList = $('#subsection-2')
+        CMS.Views.Draggabilly.onDragEnd(
+          {element: $('#unit-1')},
+          null,
+          {clientX: $('#unit-1').offset().left}
+        )
+        expect($('#subsection-2')).not.toHaveClass('collapsed')
