@@ -7,6 +7,8 @@ the top.  Include a label indicating the component affected.
 
 LMS: Add PaidCourseRegistration mode, where payment is required before course registration.
 
+Studio: Improve drag and drop on the course overview and subsection views.
+
 LMS: Add split testing functionality for internal use.
 
 Studio and LMS: add ability to lock assets (cannot be viewed unless registered for class).
