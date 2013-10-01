@@ -567,7 +567,7 @@ Feature: Video Component Editor
 
 
     # 31
-    Scenario: Change transcripts field in Advanced tab
+    Scenario: Check saving module metadata on switching between tabs
         Given I have created a Video component with t_not_exist subtitles
         And I edit the component
 
@@ -577,8 +577,7 @@ Feature: Video Component Editor
         And I open tab "Advanced"
         And I set "t_not_exist" value to the "HTML5 Timed Transcript" field
         And I open tab "Basic"
-        Then I see use existing status message
-        And I click use_existing button
+        Then I see found status message
 
         And I save changes
         Then when I view the video it does show the captions
