@@ -154,8 +154,10 @@ class CapaFields(object):
     )
     text_customization = Dict(
         help="String customization substitutions for particular locations",
-        scope=Scope.settings,
-        default=None)
+        scope=Scope.settings
+        # TODO: someday it should be possible to not duplicate this definition here
+        # and in inheritance.py
+    )
 
 
 class CapaModule(CapaFields, XModule):
@@ -349,17 +351,21 @@ class CapaModule(CapaFields, XModule):
         final attempt, change the name to "Final Check".
         The text can be customized by the text_customization setting.
         """
-        check = "Check"
-        final_check = "Final Check"
+        # The logic flow is a little odd so that _('xxx') strings can be found for
+        # translation while also running _() just once for each string.
+        check = _('Check')
+        final_check = _('Final Check')
+
         # Apply customizations if present
-        if self.text_customization:
-            check = self.text_customization.get('custom_check', check)
-            final_check = self.text_customization.get('custom_final_check', final_check)
+        if 'custom_check' in self.text_customization:
+            check = _(self.text_customization.get('custom_check'))
+        if 'custom_final_check' in self.text_customization:
+            final_check = _(self.text_customization.get('custom_final_check'))
 
         if self.max_attempts is not None and self.attempts >= self.max_attempts - 1:
-            return _(final_check)
+            return final_check
         else:
-            return _(check)
+            return check
 
     def should_show_check_button(self):
         """
