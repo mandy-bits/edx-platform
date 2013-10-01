@@ -168,28 +168,11 @@ describe "Course Overview", ->
         )
         expect(CMS.Views.Draggabilly.dragState).toEqual(
           dropDestination: null,
-          expandTimer: null,
-          toExpand: null,
           attachMethod: '',
           parentList: null
         )
 
     describe "onDragMove", ->
-      it "clears the expand timer state", ->
-        timerSpy = spyOn(window, 'clearTimeout').andCallThrough()
-        $ele = $('#unit-1')
-        $ele.offset(
-          top: $ele.offset().top + 10
-          left: $ele.offset().left
-        )
-        CMS.Views.Draggabilly.onDragMove(
-          {element: $ele},
-          null,
-            {clientX: $ele.offset().left}
-        )
-        expect(timerSpy).toHaveBeenCalled()
-        timerSpy.reset()
-
       it "adds the correct CSS class to the drop destination", ->
         $ele = $('#unit-1')
         $ele.offset(
