@@ -101,11 +101,12 @@ CMS.Views.Draggabilly = {
     onDragMove: function(draggie, event, pointer) {
         // Handle scrolling of the browser.
         var scrollAmount = 0;
-        if (window.screenY + window.innerHeight < pointer.clientY) {
-            scrollAmount = 10;
+        var dragBuffer = 10;
+        if (window.innerHeight - dragBuffer < pointer.clientY) {
+            scrollAmount = dragBuffer;
         }
-        else if (window.screenY > pointer.clientY){
-            scrollAmount = -10;
+        else if (dragBuffer > pointer.clientY){
+            scrollAmount = -(dragBuffer);
         }
         if (scrollAmount !== 0) {
             window.scrollBy(0, scrollAmount);
