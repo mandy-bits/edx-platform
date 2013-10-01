@@ -127,6 +127,8 @@ CMS.Views.Draggabilly = {
         }
         else {
             ele.removeClass(this.validDropClass);
+            this.dragState.attachMethod = '';
+            this.dragState.dropDestination = null;
         }
     },
 
