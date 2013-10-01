@@ -9,7 +9,6 @@ import shutil
 import re
 from tempfile import mkdtemp
 from path import path
-from contextlib import contextmanager
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -19,6 +18,7 @@ from django.core.urlresolvers import reverse
 from django.core.servers.basehttp import FileWrapper
 from django.core.files.temp import NamedTemporaryFile
 from django.views.decorators.http import require_http_methods, require_GET
+from django.utils.translation import ugettext as _
 
 from mitxmako.shortcuts import render_to_response
 from auth.authz import create_all_course_groups
@@ -63,7 +63,7 @@ def import_course(request, org, course, name):
         if not filename.endswith('.tar.gz'):
             return JsonResponse(
                 {
-                    'ErrMsg': 'We only support uploading a .tar.gz file.',
+                    'ErrMsg': _('We only support uploading a .tar.gz file.'),
                     'Stage': 1
                 },
                 status=415
@@ -100,7 +100,7 @@ def import_course(request, org, course, name):
                 )
                 return JsonResponse(
                     {
-                        'ErrMsg': 'File upload corrupted. Please try again',
+                        'ErrMsg': _('File upload corrupted. Please try again'),
                         'Stage': 1
                     },
                     status=409
@@ -147,13 +147,12 @@ def import_course(request, org, course, name):
 
                 tar_file = tarfile.open(temp_filepath)
                 tar_file.extractall((course_dir + '/').encode('utf-8'))
+                tar_file.close()
 
                 session_status[key] = 2
                 request.session.modified = True
 
                 # find the 'course.xml' file
-                dirpath = None
-
                 def get_all_files(directory):
                     """
                     For each file in the directory, yield a 2-tuple of (file-name,
@@ -181,7 +180,7 @@ def import_course(request, org, course, name):
                 if not dirpath:
                     return JsonResponse(
                         {
-                            'ErrMsg': 'Could not find the course.xml file in the package.',
+                            'ErrMsg': _('Could not find the course.xml file in the package.'),
                             'Stage': 2
                         },
                         status=415
@@ -212,7 +211,7 @@ def import_course(request, org, course, name):
                 logging.debug('created all course groups at {0}'.format(course_items[0].location))
 
             # Send errors to client with stage at which error occured.
-            except Exception as exception:   #pylint: disable=W0703
+            except Exception as exception:   # pylint: disable=W0703
                 return JsonResponse(
                     {
                         'ErrMsg': str(exception),
@@ -237,6 +236,7 @@ def import_course(request, org, course, name):
             })
         })
 
+
 @require_GET
 @ensure_csrf_cookie
 @login_required
@@ -257,7 +257,7 @@ def import_status(request, org, course, name):
     except KeyError:
         status = 0
 
-    return JsonResponse({"ImportStatus": status })
+    return JsonResponse({"ImportStatus": status})
 
 
 @ensure_csrf_cookie
@@ -337,6 +337,7 @@ def generate_export_course(request, org, course, name):
     response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(export_file.name)
     response['Content-Length'] = os.path.getsize(export_file.name)
     return response
+
 
 @ensure_csrf_cookie
 @login_required

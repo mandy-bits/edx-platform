@@ -76,6 +76,11 @@ var showUploadFeedback = function (event, percentComplete) {
     $('.upload-modal .progress-fill').html(percentVal);
 };
 
+/**
+ * Entry point for server feedback. Makes status list visible and starts
+ * sending requests to the server for status updates.
+ * @param {string} url The url to send Ajax GET requests for updates.
+ */
 var startServerFeedback = function (url){
     $('div.wrapper-status').removeClass('is-hidden');
     $('.status-info').show();
@@ -186,10 +191,6 @@ var clearImportDisplay = function () {
 
 var displayFinishedUpload = function (resp) {
     var asset = resp.asset;
-
-    if (xhr.status == 200) {
-        markAsLoaded();
-    }
 
     $('.upload-modal h1').html(gettext('Upload New File'));
     $('.upload-modal .embeddable-xml-input').val(asset.portable_url);
