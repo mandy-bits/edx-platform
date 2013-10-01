@@ -145,9 +145,8 @@ def import_course(request, org, course, name):
             # everything is properly cleaned up.
             try:
 
-                tar_file = tarfile.open(temp_filepath)
-                tar_file.extractall((course_dir + '/').encode('utf-8'))
-                tar_file.close()
+                with tarfile.open(temp_filepath) as tar_file:
+                    tar_file.extractall((course_dir + '/').encode('utf-8'))
 
                 session_status[key] = 2
                 request.session.modified = True
